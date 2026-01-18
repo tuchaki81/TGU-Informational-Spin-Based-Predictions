@@ -1,43 +1,61 @@
+"""
+TGU MASTER - Unified Prediction for Perihelion Precession
+Planet: Mars (Refined with Coherence Resistance Factor)
+Author: Henry Matuchaki (@MatuchakiSilva)
+"""
 
-import math
 import matplotlib.pyplot as plt
+import numpy as np
 
-# Constantes físicas e parâmetros orbitais de Marte
-a = 1.523679  # AU
-e = 0.0934
-k = 0.088  # Constante de coerência informacional da TGU
+# MASTER TGU Constants
+K = 0.0881                  # Matuchaki Parameter
+N = 12                      # Harmonic Coherence Exponent
+RS_INFORMATIONAL = 0.02391625  # Solar Coherence Radius (AU)
 
-# Precessão da Relatividade Geral para Marte (valor base conhecido)
-precessao_gr = 1.35  # arcseg/century
+# Orbital Parameters for Mars
+a = 1.523679                # Semi-major axis (AU)
+e = 0.0934                  # Eccentricity
+precessao_gr = 1.35         # GR Reference (arcsec/century)
 
-# Cálculo do fator alfa usando a fórmula unificada
-alpha = 1 + k * (e / a)
+# MASTER TGU Calculations
+alpha = 1 + K * (e / a)     # Informational gain
+epsilon = 1.0 + (RS_INFORMATIONAL / a) ** 2
+coherence_factor = epsilon ** (-N)  # Resistance factor
+precessao_tgu = precessao_gr * alpha * coherence_factor
 
-# Correção TGU e precessão total
-correcao_tgu = (alpha - 1) * precessao_gr
-precessao_total = precessao_gr + correcao_tgu
+# Additional breakdown
+correcao_tgu = precessao_tgu - precessao_gr
 
-# Impressão dos resultados
-print(f"Alpha (TGU): {alpha:.6f}")
-print(f"Correção TGU: {correcao_tgu:.6f} arcseg/século")
-print(f"Precessão Total (TGU): {precessao_total:.6f} arcseg/século")
+# Output
+print("TGU MASTER ANALYSIS – MARS")
+print("-" * 40)
+print(f"Informational Gain (Alpha):          {alpha:.6f}")
+print(f"Coherence Resistance (ε^{-N}):       {coherence_factor:.6f}")
+print(f"Correction from GR:                  {correcao_tgu:.6f} arcsec/century")
+print(f"Final TGU Precession:                {precessao_tgu:.6f} arcsec/century")
+print(f"Convergence with GR:                 {precessao_tgu / precessao_gr * 100:.2f}%")
 
-# Gráfico comparativo
-labels = ['GR Only', 'TGU Correction', 'Total (TGU)']
-values = [precessao_gr, correcao_tgu, precessao_total]
-colors = ['gray', 'orange', 'blue']
+# Comparative Bar Plot
+labels = ['GR Only', 'TGU Gain Only', 'TGU MASTER (Refined)']
+values = [precessao_gr, precessao_gr * alpha, precessao_tgu]
+colors = ['gray', 'lightblue', 'darkblue']
 
-plt.figure(figsize=(8, 5))
+plt.figure(figsize=(10, 6))
 bars = plt.bar(labels, values, color=colors)
-plt.title("TGU Unified Prediction vs GR — Mars")
-plt.ylabel("Precessão (arcseg/século)")
+plt.title('Perihelion Precession of Mars: GR vs. TGU vs. TGU MASTER', fontsize=14)
+plt.ylabel('Precession (arcsec/century)', fontsize=12)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-# Adiciona os valores no topo das barras
+# Add value labels on bars
 for bar in bars:
     yval = bar.get_height()
-    plt.text(bar.get_x() + bar.get_width() / 2.0, yval + 0.01, f'{yval:.3f}', ha='center', va='bottom')
+    plt.text(bar.get_x() + bar.get_width()/2.0, yval + 0.01, f'{yval:.3f}', 
+             ha='center', va='bottom', fontsize=10)
 
-plt.grid(True, axis='y', linestyle='--', alpha=0.6)
+# Reference line for GR
+plt.axhline(precessao_gr, color='gray', linestyle='--', alpha=0.7, label='GR Baseline')
+
+plt.legend()
 plt.tight_layout()
-plt.savefig("/mnt/data/TGU_Prediction_Mars_Unified.py.png")
+plt.savefig("TGU_Prediction_Mars_MASTER.png")
 plt.show()
