@@ -1,7 +1,17 @@
+"""
+TGU Unified Alpha Calculator for Selected Exoplanets - MASTER TGU Version
+Author: Henry Matuchaki (@MatuchakiSilva)
+Refined Formula: total_correction = alpha * coherence_factor
+where alpha = 1 + k * (e / a)
+coherence_factor = epsilon ** (-n), epsilon = 1 + (rs / r)**2, r ≈ a
+"""
 
-# TGU Unified Alpha Calculator for Selected Exoplanets
-# Author: Henry Matuchaki (based on TGU - Teoria Unificada do Spin Informacional)
-# Formula: alpha = 1 + k * (e / a), where k ≈ 0.088
+import numpy as np
+
+# MASTER TGU Constants
+K = 0.0881                  # Universal Informational Coupling (Matuchaki Parameter)
+N = 12                      # Coherence Exponent (Harmonic Structure)
+RS_INFORMATIONAL = 0.02391625  # Solar Coherence Radius (AU)
 
 exoplanets = [
     {"name": "WASP-12b", "a": 0.0229, "e": 0.0486},
@@ -16,13 +26,18 @@ exoplanets = [
     {"name": "WASP-33b", "a": 0.0256, "e": 0.0}
 ]
 
-k = 0.088  # TGU universal constant of coherence
-
-print("Exoplaneta           |  a (UA)  |  e       |  e/a     |  alpha (TGU)")
-print("---------------------|----------|----------|----------|--------------")
+print("Exoplaneta           |  a (UA)  |  e       |  e/a     |  alpha   | Coherence Factor | Total Correction")
+print("---------------------|----------|----------|----------|----------|------------------|------------------")
 for exo in exoplanets:
     a = exo["a"]
     e = exo["e"]
-    alpha = 1 + k * (e / a)
     e_a = e / a
-    print(f"{exo['name']:<20} | {a:<8.4f} | {e:<8.4f} | {e_a:<8.4f} | {alpha:.6f}")
+    alpha = 1 + K * e_a
+    
+    # MASTER TGU Coherence Factor
+    epsilon = 1.0 + (RS_INFORMATIONAL / a) ** 2
+    coherence_factor = epsilon ** (-N)
+    
+    total_correction = alpha * coherence_factor
+    
+    print(f"{exo['name']:<20} | {a:<8.4f} | {e:<8.4f} | {e_a:<8.4f} | {alpha:.6f} | {coherence_factor:.6f}         | {total_correction:.6f}")
